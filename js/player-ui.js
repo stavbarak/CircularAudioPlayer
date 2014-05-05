@@ -10,7 +10,7 @@ function buildPlayerUI(){
     var paper = Raphael(0, 0, 320, 200);
     var circle = paper.circle(ccX,ccY,r);
     var x = ((firstpX - ccX) * b) - ((firstpY -ccY) * a) + ccX,
-        y = ((firstpX -ccX) * a) + ((firstpY-ccY) * a) +ccY;
+        y = ((firstpX -ccX) * a) + ((firstpY-ccY) * b) +ccY;
     var goto = x + "," + y;
     var pizzaSlice = paper.path("M160,100 L" + firstp + " A60,60 0 0,1 " + goto + " z");
     pizzaSlice.attr("fill", "#43E4E4");
@@ -19,7 +19,7 @@ function buildPlayerUI(){
     firstpY = y;
     firstp = firstpX + "," + firstpY;
     x = ((firstpX - ccX) * b) - ((firstpY -ccY) * a) + ccX;
-    y = ((firstpX -ccX) * a) + ((firstpY-ccY) * a) +ccY;
+    y = ((firstpX -ccX) * a) + ((firstpY-ccY) * b) +ccY;
     goto = x + "," + y;
     pizzaSlice2 = paper.path("M160,100 L" + firstp + " A60,60 0 0,1 " + goto + " z");
     pizzaSlice2.attr("fill", "#FFCC22");
