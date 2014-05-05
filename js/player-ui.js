@@ -1,4 +1,7 @@
 function buildPlayerUI(){
+    //TODO put all variables in CAP scope (stands for Circular Audio Player)
+    var CAP = {};
+    
     //rotation constants a = sin(pi/12) b = cos(pi/12)
     var a = 0.259, b = 0.966;
     
@@ -20,7 +23,7 @@ function PizzaSlice() {
     //size is a multiple of pie (default value)
     this.size = 0.083;
     
-    //TODO a and b should be compued once when PizzaSlice is instansiated
+    //TODO a and b should be computed from size once PizzaSlice is instansiated
     this.a = 0.259;
     this.b = 0.966;
     
