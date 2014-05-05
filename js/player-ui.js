@@ -2,25 +2,59 @@ function buildPlayerUI(){
     //rotation constants a = sin(pi/12) b = cos(pi/12)
     var a = 0.259, b = 0.966;
     
-    var ccX = 160, ccY = 100, r = 60;
+    var cc = {
+        X: 160,
+        Y: 100
+    };
     
-    var firstpX = ccX - r;
-    var firstpY = ccY;
-    var firstp = firstpX + "," + firstpY;
+    var ccX = cc.X, ccY = cc.Y, r = 60;
     var paper = Raphael(0, 0, 320, 200);
     var circle = paper.circle(ccX,ccY,r);
-    var x = ((firstpX - ccX) * b) - ((firstpY -ccY) * a) + ccX,
-        y = ((firstpX -ccX) * a) + ((firstpY-ccY) * b) +ccY;
-    var goto = x + "," + y;
-    var pizzaSlice = paper.path("M160,100 L" + firstp + " A60,60 0 0,1 " + goto + " z");
-    pizzaSlice.attr("fill", "#43E4E4");
     
-    firstpX = x;
-    firstpY = y;
-    firstp = firstpX + "," + firstpY;
-    x = ((firstpX - ccX) * b) - ((firstpY -ccY) * a) + ccX;
-    y = ((firstpX -ccX) * a) + ((firstpY-ccY) * b) +ccY;
-    goto = x + "," + y;
-    pizzaSlice2 = paper.path("M160,100 L" + firstp + " A60,60 0 0,1 " + goto + " z");
-    pizzaSlice2.attr("fill", "#FFCC22");
+    var firstPizza = new PizzaSlice();
+    firstPizza.drawPizza(paper);
+
+}
+
+function PizzaSlice() {
+    //size is a multiple of pie (default value)
+    this.size = 0.083;
+    
+    //TODO a and b should be compued once when PizzaSlice is instansiated
+    this.a = 0.259;
+    this.b = 0.966;
+    
+    //c and d are the constants used to calculate a progress frame
+    this.c = 0.259;
+    this.d = 0.966;
+    
+    this.color = "#45EEF0";
+    
+    //default values - TODO: take values from constructor
+    this.circle = {
+        X: 160,
+        Y: 100,
+        R: 60 };
+        
+    this.point = {
+        X: this.circle.X - this.circle.R,
+        Y: this.circle.Y
+    };
+    
+    this.drawPizza = function(paper) {
+        var goto = {
+            X: ((this.point.X - this.circle.X) * this.b) - ((this.point.Y - this.circle.Y) * this.a) + this.circle.X,
+            Y: ((this.point.X - this.circle.X) * this.a) + ((this.point.Y - this.circle.Y) * this.b) + this.circle.Y
+        };
+        
+        var pathString = "M" + this.circle.X + "," + this.circle.Y + 
+        " L" + this.point.X + "," + this.point.Y +
+        " A" + this.circle.R + "," + this.circle.R +
+        " 0 0,1 " +
+        goto.X + "," + goto.Y + " z";
+        
+        this.drawing = paper.path(pathString);
+        this.drawing.attr("fill", this.color);
+    };
+    
 }
