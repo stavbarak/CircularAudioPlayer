@@ -13,19 +13,21 @@ function buildPlayerUI(){
     var ccX = cc.X, ccY = cc.Y, r = 60;
     var paper = Raphael(0, 0, 320, 200);
     var circle = paper.circle(ccX,ccY,r);
-    
-    var firstPizza = new PizzaSlice();
+    var pizzaMaker = {
+        angle: 120
+    }
+    var firstPizza = new PizzaSlice(pizzaMaker);
     firstPizza.drawPizza(paper);
 
 }
 
-function PizzaSlice() {
+function PizzaSlice(data) {
     //size is a multiple of pie (default value)
     this.size = 0.083;
     
     //TODO a and b should be computed from size once PizzaSlice is instansiated
-    this.a = 0.259;
-    this.b = 0.966;
+    this.a = Math.sin((Math.PI / 180) * data.angle);//0.259;
+    this.b = Math.cos((Math.PI / 180) * data.angle);// 0.966;
     
     //c and d are the constants used to calculate a progress frame
     this.c = 0.259;
@@ -38,6 +40,12 @@ function PizzaSlice() {
         X: 160,
         Y: 100,
         R: 60 };
+    
+    //this is a constans, not a default value    
+    this.startingPoint = {
+        X: this.circle.X - this.circle.R,
+        Y: this.circle.Y
+    };
         
     this.point = {
         X: this.circle.X - this.circle.R,
@@ -49,11 +57,17 @@ function PizzaSlice() {
             X: ((this.point.X - this.circle.X) * this.b) - ((this.point.Y - this.circle.Y) * this.a) + this.circle.X,
             Y: ((this.point.X - this.circle.X) * this.a) + ((this.point.Y - this.circle.Y) * this.b) + this.circle.Y
         };
+        var direction;
+        if (data.angle > 180) {
+            direction = "1,1";
+        } else {
+            direction = "0,1";
+        }
         
         var pathString = "M" + this.circle.X + "," + this.circle.Y + 
         " L" + this.point.X + "," + this.point.Y +
         " A" + this.circle.R + "," + this.circle.R +
-        " 0 0,1 " +
+        " 0 " + direction + " " +
         goto.X + "," + goto.Y + " z";
         
         this.drawing = paper.path(pathString);
