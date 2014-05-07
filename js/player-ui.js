@@ -14,10 +14,24 @@ function buildPlayerUI(){
     var paper = Raphael(0, 0, 320, 200);
     var circle = paper.circle(ccX,ccY,r);
     var pizzaMaker = {
-        angle: 120
-    }
+        circleX: 160,
+        circleY: 100,
+        circleRaduis: 60,
+        angle: 120,
+        startingAngle: 0,
+        color: "#EE249F"
+    };
     var firstPizza = new PizzaSlice(pizzaMaker);
     firstPizza.drawPizza(paper);
+    
+    var k = 1;
+    var animationTest = setInterval(function() {
+        firstPizza.updatePizza(paper, {angle: 120, startingAngle: 0 +k});
+        if (k == 360) {
+            clearInterval(animationTest);
+        }
+        k++;
+    }, 50);
 
 }
 
@@ -25,31 +39,52 @@ function PizzaSlice(data) {
     //size is a multiple of pie (default value)
     this.size = 0.083;
     
-    //TODO a and b should be computed from size once PizzaSlice is instansiated
-    this.a = Math.sin((Math.PI / 180) * data.angle);//0.259;
-    this.b = Math.cos((Math.PI / 180) * data.angle);// 0.966;
+    //a and b are computed from data.angle once PizzaSlice is instansiated
+    this.a = Math.sin((Math.PI / 180) * data.angle);
+    this.b = Math.cos((Math.PI / 180) * data.angle);
     
     //c and d are the constants used to calculate a progress frame
+    //They should be calculated from data.seconds - which are the total
+    //time in seconds it should take to complete a circle
     this.c = 0.259;
     this.d = 0.966;
     
-    this.color = "#45EEF0";
+    //e and f are calculated once from startingAngle
+    this.e = Math.sin((Math.PI / 180) * data.startingAngle);
+    this.f = Math.cos((Math.PI / 180) * data.startingAngle);
+    
+    this.color = data.color;
     
     //default values - TODO: take values from constructor
     this.circle = {
-        X: 160,
-        Y: 100,
-        R: 60 };
+        X: data.circleX,
+        Y: data.circleY,
+        R: data.circleRaduis };
     
     //this is a constans, not a default value    
-    this.startingPoint = {
+    this.referencePoint = {
         X: this.circle.X - this.circle.R,
         Y: this.circle.Y
     };
         
     this.point = {
-        X: this.circle.X - this.circle.R,
-        Y: this.circle.Y
+        X: ((this.referencePoint.X - this.circle.X) * this.f) - ((this.referencePoint.Y - this.circle.Y) * this.e) + this.circle.X,
+        Y: ((this.referencePoint.X - this.circle.X) * this.e) + ((this.referencePoint.Y - this.circle.Y) * this.f) + this.circle.Y
+    };
+    
+    this.updatePizza = function(paper, data) {
+        this.a = Math.sin((Math.PI / 180) * data.angle);
+        this.b = Math.cos((Math.PI / 180) * data.angle);
+        
+        this.e = Math.sin((Math.PI / 180) * data.startingAngle);
+        this.f = Math.cos((Math.PI / 180) * data.startingAngle);
+        
+        this.point = {
+            X: ((this.referencePoint.X - this.circle.X) * this.f) - ((this.referencePoint.Y - this.circle.Y) * this.e) + this.circle.X,
+            Y: ((this.referencePoint.X - this.circle.X) * this.e) + ((this.referencePoint.Y - this.circle.Y) * this.f) + this.circle.Y
+        };
+        this.drawing.remove();
+        this.drawPizza(paper);
     };
     
     this.drawPizza = function(paper) {
