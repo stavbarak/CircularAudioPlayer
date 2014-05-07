@@ -1,57 +1,57 @@
-function buildPlayerUI(){
-    //TODO put all variables in CAP scope (stands for Circular Audio Player)
-    var CAP = {};
-    
-    //rotation constants a = sin(pi/12) b = cos(pi/12)
-    var a = 0.259, b = 0.966;
-    
-    var cc = {
+function CAP_Player(data){
+    //CAP stands for Circular Audio Player
+
+    //TODO should be collected from the constructer data
+    this.circle = {
         X: 160,
-        Y: 100
+        Y: 100,
+        R: 90
     };
     
-    var ccX = cc.X, ccY = cc.Y, r = 60;
-    var paper = Raphael(0, 0, 320, 200);
-    var circle = paper.circle(ccX,ccY,r);
-    var pizzaMaker = {
-        circleX: 160,
-        circleY: 100,
-        circleRaduis: 60,
+    //TODO should be collected from the constructer data
+    this.paper = Raphael(0, 0, 320, 200);
+    this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
+    
+    //TODO this should be a method that gets its data from the website js and returns the PizzaSlice object
+    this.pizzaMaker = {
+        circleX: this.circle.X,
+        circleY: this.circle.Y,
+        circleRaduis: this.circle.R,
         angle: 120,
         startingAngle: 0,
         color: "#EE249F"
     };
-    var firstPizza = new PizzaSlice(pizzaMaker);
-    firstPizza.drawPizza(paper);
+    this.firstPizza = new PizzaSlice(this.pizzaMaker);
+    this.firstPizza.drawPizza(this.paper);
     
-    var k = 1;
-    var animationTest = setInterval(function() {
-        firstPizza.updatePizza(paper, {angle: 120, startingAngle: 0 +k});
-        if (k == 360) {
-            clearInterval(animationTest);
-        }
-        k++;
-    }, 50);
+    // var k = 0.25;
+    // var animationTest = setInterval(function() {
+    //     this.firstPizza.updatePizza(this.paper, {angle: 120, startingAngle: 0 + k});
+    //     if (k >= 360) {
+    //         clearInterval(animationTest);
+    //     }
+    //     k+=0.25;
+    // }, 50);
 
 }
 
 function PizzaSlice(data) {
-    //size is a multiple of pie (default value)
-    this.size = 0.083;
+    this.angle = data.angle;
+    this.startingAngle = data.startingAngle;
     
     //a and b are computed from data.angle once PizzaSlice is instansiated
-    this.a = Math.sin((Math.PI / 180) * data.angle);
-    this.b = Math.cos((Math.PI / 180) * data.angle);
+    this.a = Math.sin((Math.PI / 180) * this.angle);
+    this.b = Math.cos((Math.PI / 180) * this.angle);
     
     //c and d are the constants used to calculate a progress frame
-    //They should be calculated from data.seconds - which are the total
-    //time in seconds it should take to complete a circle
+    //TODO They should be calculated from data.seconds - which are the total
+    //time in seconds it should take to complete a circle (are these still necessary??)
     this.c = 0.259;
     this.d = 0.966;
     
     //e and f are calculated once from startingAngle
-    this.e = Math.sin((Math.PI / 180) * data.startingAngle);
-    this.f = Math.cos((Math.PI / 180) * data.startingAngle);
+    this.e = Math.sin((Math.PI / 180) * this.startingAngle);
+    this.f = Math.cos((Math.PI / 180) * this.startingAngle);
     
     this.color = data.color;
     
@@ -73,11 +73,14 @@ function PizzaSlice(data) {
     };
     
     this.updatePizza = function(paper, data) {
-        this.a = Math.sin((Math.PI / 180) * data.angle);
-        this.b = Math.cos((Math.PI / 180) * data.angle);
+        this.angle = data.angle;
+        this.startingAngle = data.startingAngle;
         
-        this.e = Math.sin((Math.PI / 180) * data.startingAngle);
-        this.f = Math.cos((Math.PI / 180) * data.startingAngle);
+        this.a = Math.sin((Math.PI / 180) * this.angle);
+        this.b = Math.cos((Math.PI / 180) * this.angle);
+        
+        this.e = Math.sin((Math.PI / 180) * this.startingAngle);
+        this.f = Math.cos((Math.PI / 180) * this.startingAngle);
         
         this.point = {
             X: ((this.referencePoint.X - this.circle.X) * this.f) - ((this.referencePoint.Y - this.circle.Y) * this.e) + this.circle.X,
@@ -93,7 +96,7 @@ function PizzaSlice(data) {
             Y: ((this.point.X - this.circle.X) * this.a) + ((this.point.Y - this.circle.Y) * this.b) + this.circle.Y
         };
         var direction;
-        if (data.angle > 180) {
+        if (this.angle > 180) {
             direction = "1,1";
         } else {
             direction = "0,1";
