@@ -1,28 +1,24 @@
 function CAP_Player(data){
     //CAP stands for Circular Audio Player
-
-    //TODO should be collected from the constructer data
+    
     this.circle = {
-        X: 160,
-        Y: 100,
-        R: 90
+        X: data.X,
+        Y: data.Y,
+        R: data.R
     };
     
-    //TODO should be collected from the constructer data
+    //TODO should be collected from the constructer data. Paper should be created outside and passed in data.paper
     this.paper = Raphael(0, 0, 320, 200);
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
     
-    //TODO this should be a method that gets its data from the website js and returns the PizzaSlice object
-    this.pizzaMaker = {
-        circleX: this.circle.X,
-        circleY: this.circle.Y,
-        circleRaduis: this.circle.R,
-        angle: 120,
-        startingAngle: 0,
-        color: "#EE249F"
+    this.makePizza = function(data) {
+        data.circleX = this.circle.X;
+        data.circleY = this.circle.Y;
+        data.circleRaduis = this.circle.R;
+        var aPizza = new PizzaSlice(data);
+        aPizza.drawPizza(this.paper);
+        return aPizza;
     };
-    this.firstPizza = new PizzaSlice(this.pizzaMaker);
-    this.firstPizza.drawPizza(this.paper);
     
     // var k = 0.25;
     // var animationTest = setInterval(function() {
