@@ -2,32 +2,27 @@ function CAP_Player(data){
     //CAP stands for Circular Audio Player
     
     this.circle = {
-        X: data.X,
-        Y: data.Y,
-        R: data.R
+        X: data.size / 2,
+        Y: data.size / 2,
+        R: data.size / 2
     };
     
     //TODO should be collected from the constructer data. Paper should be created outside and passed in data.paper
-    this.paper = Raphael(0, 0, 320, 200);
+    this.paper = Raphael(data.container, data.size, data.size);
+    
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
+    
+    this.pizzas = [];
     
     this.makePizza = function(data) {
         data.circleX = this.circle.X;
         data.circleY = this.circle.Y;
         data.circleRaduis = this.circle.R;
         var aPizza = new PizzaSlice(data);
-        aPizza.drawPizza(this.paper);
+        aPizza.drawPizza(this.player.paper);
+        this.pizzas.push(aPizza);
         return aPizza;
     };
-    
-    // var k = 0.25;
-    // var animationTest = setInterval(function() {
-    //     this.firstPizza.updatePizza(this.paper, {angle: 120, startingAngle: 0 + k});
-    //     if (k >= 360) {
-    //         clearInterval(animationTest);
-    //     }
-    //     k+=0.25;
-    // }, 50);
 
 }
 
@@ -68,7 +63,8 @@ function PizzaSlice(data) {
         Y: ((this.referencePoint.X - this.circle.X) * this.e) + ((this.referencePoint.Y - this.circle.Y) * this.f) + this.circle.Y
     };
     
-    this.updatePizza = function(paper, data) {
+    this.updatePizza = function(data) {
+        //TODO remove "this" where it is not needed, change to function scope
         this.angle = data.angle;
         this.startingAngle = data.startingAngle;
         
@@ -82,6 +78,7 @@ function PizzaSlice(data) {
             X: ((this.referencePoint.X - this.circle.X) * this.f) - ((this.referencePoint.Y - this.circle.Y) * this.e) + this.circle.X,
             Y: ((this.referencePoint.X - this.circle.X) * this.e) + ((this.referencePoint.Y - this.circle.Y) * this.f) + this.circle.Y
         };
+        var paper = this.drawing.paper;
         this.drawing.remove();
         this.drawPizza(paper);
     };
