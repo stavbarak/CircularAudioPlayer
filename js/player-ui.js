@@ -7,13 +7,21 @@ function CAP_Player(data){
         R: data.size / 2
     };
     
-    this.container = data.container;
+    if (isElement(data.container)){
+        this.container = data.container;    
+    } else{
+        this.container = document.getElementById(data.container);
+    }
+    
+    if (isElement(this.container)) {
+        console.log("container is now DOM");
+    } else { alert("oh no!"); }
     
     //TODO should be collected from the constructer data. Paper should be created outside and passed in data.paper
     this.paper = Raphael(this.container, data.size, data.size);
     
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
-    
+
     this.tracks = [];
     this.files = [];
     
@@ -31,21 +39,22 @@ function CAP_Player(data){
     };
     
     this.beReady = function() {
+        console.log(this.files);
         var anglePerTrack = 360 / this.files.length;
-        var j = 0;
         for (var file in this.files) {
-            //create audio tag of each file
+            //TODO create audio tag of each file in the container
+            var audio = this.container.appendChild(document.createElement("audio"));
+            audio.src=(this.files[file]);
             this.tracks.push(new Track({
-                //instead of filename, link the DOM element of the audio tag
+                audio: audio,
                 filename: file,
                 paper: this.player.paper,
                 circleX: this.circle.X,
                 circleY: this.circle.Y,
                 circleRaduis: this.circle.R,
                 angle: anglePerTrack,
-                startingAngle: j * anglePerTrack
+                startingAngle: file * anglePerTrack
             }));
-            j++;
         }
     };
 
@@ -53,19 +62,38 @@ function CAP_Player(data){
 
 function Track(data) {
     this.file = data.filename;
+    
+    // the DOM element of the audio tag
+    this.audio = data.audio;
+    
+    this.clicking = function() {
+      if (data.audio.paused || data.audio.ended) {
+          //TODO need to find a way to pause all other tracks in the player when another track is clicked on
+          //TODO animate the track when playing
+          //NOTE instead of directly playing, this function will send a request to the player to play itself
+          data.audio.play(); 
+      } else {
+          data.audio.pause();
+      }
+    };
     this.pizza = new PizzaSlice({
         circleX: data.circleX,
         circleY: data.circleY,
         circleRaduis: data.circleRaduis,
         color: getRandomColor(),
         angle: data.angle,
-        startingAngle: data.startingAngle
+        startingAngle: data.startingAngle,
+        //TODO bind onClick funtion to play pause the audio
+        onClick: this.clicking
     });
     this.pizza.drawPizza(data.paper);
+    
     
 }
 
 function PizzaSlice(data) {
+    //TODO add data.onClick as a function to be called when the slice is being clicked on.
+    this.onClick = data.onClick;
     this.angle = data.angle;
     this.startingAngle = data.startingAngle;
     this.color = data.color;
@@ -101,7 +129,6 @@ function PizzaSlice(data) {
     };
     
     this.updatePizza = function(data) {
-        //TODO remove "this" where it is not needed, change to function scope
         this.angle = data.angle;
         this.startingAngle = data.startingAngle;
         
@@ -115,7 +142,10 @@ function PizzaSlice(data) {
             X: ((this.referencePoint.X - this.circle.X) * this.f) - ((this.referencePoint.Y - this.circle.Y) * this.e) + this.circle.X,
             Y: ((this.referencePoint.X - this.circle.X) * this.e) + ((this.referencePoint.Y - this.circle.Y) * this.f) + this.circle.Y
         };
+        
+        //'pickup' the paper from the drawing before removing the drawing
         var paper = this.drawing.paper;
+        
         this.drawing.remove();
         this.drawPizza(paper);
     };
@@ -140,8 +170,26 @@ function PizzaSlice(data) {
         
         this.drawing = paper.path(pathString);
         this.drawing.attr("fill", this.color);
+        this.drawing.click(this.onClick);
     };
-    
+
+}
+
+/*assitant functions (TODO: consider to move these to a seperate file)*/
+
+function isElement(obj) {
+  try {
+    //Using W3 DOM2 (works for FF, Opera and Chrom)
+    return obj instanceof HTMLElement;
+  }
+  catch(e){
+    //Browsers not supporting W3 DOM2 don't have HTMLElement and
+    //an exception is thrown and we end up here. Testing some
+    //properties that all elements have. (works on IE7)
+    return (typeof obj==="object") &&
+      (obj.nodeType===1) && (typeof obj.style === "object") &&
+      (typeof obj.ownerDocument ==="object");
+  }
 }
 
 function getRandomColor() {
