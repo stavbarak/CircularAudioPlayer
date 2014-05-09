@@ -17,7 +17,6 @@ function CAP_Player(data){
         console.log("container is now DOM");
     } else { alert("oh no!"); }
     
-    //TODO should be collected from the constructer data. Paper should be created outside and passed in data.paper
     this.paper = Raphael(this.container, data.size, data.size);
     
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
@@ -42,10 +41,10 @@ function CAP_Player(data){
         console.log(this.files);
         var anglePerTrack = 360 / this.files.length;
         for (var file in this.files) {
-            //TODO create audio tag of each file in the container
             var audio = this.container.appendChild(document.createElement("audio"));
             audio.src=(this.files[file]);
             this.tracks.push(new Track({
+                parentPlayer: this,
                 audio: audio,
                 filename: file,
                 paper: this.player.paper,
@@ -57,25 +56,33 @@ function CAP_Player(data){
             }));
         }
     };
+    
+    this.pauseAllTracks = function () {
+        for(var track in this.tracks) {
+            this.tracks[track].pause();
+        }
+    };
 
 }
 
 function Track(data) {
     this.file = data.filename;
+    this.parentPlayer = data.parentPlayer;
+    this.startingAngle = data.startingAngle;
     
     // the DOM element of the audio tag
     this.audio = data.audio;
     
     this.clicking = function() {
-      if (data.audio.paused || data.audio.ended) {
-          //TODO need to find a way to pause all other tracks in the player when another track is clicked on
-          //TODO animate the track when playing
-          //NOTE instead of directly playing, this function will send a request to the player to play itself
-          data.audio.play(); 
-      } else {
-          data.audio.pause();
-      }
+        console.log("clicked!");
+        if (this.audio.paused || this.audio.ended) {
+            this.parentPlayer.pauseAllTracks();
+            this.play(); 
+        } else {
+            this.pause();
+        }
     };
+    
     this.pizza = new PizzaSlice({
         circleX: data.circleX,
         circleY: data.circleY,
@@ -83,16 +90,31 @@ function Track(data) {
         color: getRandomColor(),
         angle: data.angle,
         startingAngle: data.startingAngle,
-        //TODO bind onClick funtion to play pause the audio
-        onClick: this.clicking
+        onClick: this.clicking.bind(this)
     });
+    
     this.pizza.drawPizza(data.paper);
     
+    this.play = function() {
+        this.audio.play();
+        var myPizza = this.pizza;
+        var myAudio = this.audio;
+        var myStartingAngle = this.startingAngle;
+        this.animation = setInterval(function() {
+            myPizza.updatePizza({
+            startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
+        });
+        }, 20);
+    };
     
+    this.pause = function() {
+        clearInterval(this.animation);
+        this.audio.pause();
+    };
+
 }
 
 function PizzaSlice(data) {
-    //TODO add data.onClick as a function to be called when the slice is being clicked on.
     this.onClick = data.onClick;
     this.angle = data.angle;
     this.startingAngle = data.startingAngle;
@@ -101,12 +123,6 @@ function PizzaSlice(data) {
     //a and b are computed from data.angle once PizzaSlice is instansiated
     this.a = Math.sin((Math.PI / 180) * this.angle);
     this.b = Math.cos((Math.PI / 180) * this.angle);
-    
-    //c and d are the constants used to calculate a progress frame
-    //TODO They should be calculated from data.seconds - which are the total
-    //time in seconds it should take to complete a circle (are these still necessary??)
-    this.c = 0.259;
-    this.d = 0.966;
     
     //e and f are calculated once from startingAngle
     this.e = Math.sin((Math.PI / 180) * this.startingAngle);
@@ -117,7 +133,7 @@ function PizzaSlice(data) {
         Y: data.circleY,
         R: data.circleRaduis };
     
-    //this is a constan, not a default value    
+    //this is a constant, not a default value    
     this.referencePoint = {
         X: this.circle.X - this.circle.R,
         Y: this.circle.Y
@@ -129,7 +145,9 @@ function PizzaSlice(data) {
     };
     
     this.updatePizza = function(data) {
-        this.angle = data.angle;
+        if(data.angle) {
+            this.angle = data.angle;
+        }
         this.startingAngle = data.startingAngle;
         
         this.a = Math.sin((Math.PI / 180) * this.angle);
@@ -143,12 +161,10 @@ function PizzaSlice(data) {
             Y: ((this.referencePoint.X - this.circle.X) * this.e) + ((this.referencePoint.Y - this.circle.Y) * this.f) + this.circle.Y
         };
         
-        //'pickup' the paper from the drawing before removing the drawing
-        var paper = this.drawing.paper;
-        
-        this.drawing.remove();
-        this.drawPizza(paper);
+        this.drawPizza(this.drawing.paper);
     };
+    
+    //TODO add a drawAgain function to bring the this pizza slice to the top
     
     this.drawPizza = function(paper) {
         var goto = {
@@ -168,9 +184,13 @@ function PizzaSlice(data) {
         " 0 " + direction + " " +
         goto.X + "," + goto.Y + " z";
         
-        this.drawing = paper.path(pathString);
-        this.drawing.attr("fill", this.color);
-        this.drawing.click(this.onClick);
+        if(this.drawing) {
+            this.drawing.attr("path", pathString);
+        } else {
+            this.drawing = paper.path(pathString);
+            this.drawing.attr("fill", this.color);
+            this.drawing.click(this.onClick);
+        }
     };
 
 }
