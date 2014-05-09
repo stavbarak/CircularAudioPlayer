@@ -7,12 +7,15 @@ function CAP_Player(data){
         R: data.size / 2
     };
     
+    this.container = data.container;
+    
     //TODO should be collected from the constructer data. Paper should be created outside and passed in data.paper
-    this.paper = Raphael(data.container, data.size, data.size);
+    this.paper = Raphael(this.container, data.size, data.size);
     
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
     
-    this.pizzas = [];
+    this.tracks = [];
+    this.files = [];
     
     this.makePizza = function(data) {
         data.circleX = this.circle.X;
@@ -20,15 +23,52 @@ function CAP_Player(data){
         data.circleRaduis = this.circle.R;
         var aPizza = new PizzaSlice(data);
         aPizza.drawPizza(this.player.paper);
-        this.pizzas.push(aPizza);
         return aPizza;
     };
+    
+    this.addTrack = function(filename) {
+        this.files.push(filename);
+    };
+    
+    this.beReady = function() {
+        var anglePerTrack = 360 / this.files.length;
+        var j = 0;
+        for (var file in this.files) {
+            //create audio tag of each file
+            this.tracks.push(new Track({
+                //instead of filename, link the DOM element of the audio tag
+                filename: file,
+                paper: this.player.paper,
+                circleX: this.circle.X,
+                circleY: this.circle.Y,
+                circleRaduis: this.circle.R,
+                angle: anglePerTrack,
+                startingAngle: j * anglePerTrack
+            }));
+            j++;
+        }
+    };
 
+}
+
+function Track(data) {
+    this.file = data.filename;
+    this.pizza = new PizzaSlice({
+        circleX: data.circleX,
+        circleY: data.circleY,
+        circleRaduis: data.circleRaduis,
+        color: getRandomColor(),
+        angle: data.angle,
+        startingAngle: data.startingAngle
+    });
+    this.pizza.drawPizza(data.paper);
+    
 }
 
 function PizzaSlice(data) {
     this.angle = data.angle;
     this.startingAngle = data.startingAngle;
+    this.color = data.color;
     
     //a and b are computed from data.angle once PizzaSlice is instansiated
     this.a = Math.sin((Math.PI / 180) * this.angle);
@@ -44,15 +84,12 @@ function PizzaSlice(data) {
     this.e = Math.sin((Math.PI / 180) * this.startingAngle);
     this.f = Math.cos((Math.PI / 180) * this.startingAngle);
     
-    this.color = data.color;
-    
-    //default values - TODO: take values from constructor
     this.circle = {
         X: data.circleX,
         Y: data.circleY,
         R: data.circleRaduis };
     
-    //this is a constans, not a default value    
+    //this is a constan, not a default value    
     this.referencePoint = {
         X: this.circle.X - this.circle.R,
         Y: this.circle.Y
@@ -105,4 +142,13 @@ function PizzaSlice(data) {
         this.drawing.attr("fill", this.color);
     };
     
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
