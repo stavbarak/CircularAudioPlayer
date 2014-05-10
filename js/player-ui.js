@@ -13,25 +13,12 @@ function CAP_Player(data){
         this.container = document.getElementById(data.container);
     }
     
-    if (isElement(this.container)) {
-        console.log("container is now DOM");
-    } else { alert("oh no!"); }
-    
     this.paper = Raphael(this.container, data.size, data.size);
     
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
 
     this.tracks = [];
     this.files = [];
-    
-    this.makePizza = function(data) {
-        data.circleX = this.circle.X;
-        data.circleY = this.circle.Y;
-        data.circleRaduis = this.circle.R;
-        var aPizza = new PizzaSlice(data);
-        aPizza.drawPizza(this.player.paper);
-        return aPizza;
-    };
     
     this.addTrack = function(filename) {
         this.files.push(filename);
@@ -74,7 +61,6 @@ function Track(data) {
     this.audio = data.audio;
     
     this.clicking = function() {
-        console.log("clicked!");
         if (this.audio.paused || this.audio.ended) {
             this.parentPlayer.pauseAllTracks();
             this.play(); 
@@ -97,6 +83,7 @@ function Track(data) {
     
     this.play = function() {
         this.audio.play();
+        this.pizza.drawAgain();
         var myPizza = this.pizza;
         var myAudio = this.audio;
         var myStartingAngle = this.startingAngle;
@@ -164,7 +151,11 @@ function PizzaSlice(data) {
         this.drawPizza(this.drawing.paper);
     };
     
-    //TODO add a drawAgain function to bring the this pizza slice to the top
+    this.drawAgain = function() {
+        var paper = this.drawing.paper;
+        this.drawing.remove();
+        this.drawPizza(paper);
+    };
     
     this.drawPizza = function(paper) {
         var goto = {
@@ -184,7 +175,7 @@ function PizzaSlice(data) {
         " 0 " + direction + " " +
         goto.X + "," + goto.Y + " z";
         
-        if(this.drawing) {
+        if(!!this.drawing && this.drawing.paper) {
             this.drawing.attr("path", pathString);
         } else {
             this.drawing = paper.path(pathString);
