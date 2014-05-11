@@ -27,6 +27,11 @@ function CAP_Player(data){
     this.beReady = function() {
         console.log(this.files);
         var anglePerTrack = 360 / this.files.length;
+        this.topCircle = this.container.appendChild(document.createElement("div"));
+        this.topCircle.setAttribute("id", "tembel");
+        this.topCircle.setAttribute("class", "over_center");
+        this.timer = this.topCircle.appendChild(document.createElement("span"));
+        this.timer.setAttribute("id", "timer");
         for (var file in this.files) {
             var audio = this.container.appendChild(document.createElement("audio"));
             audio.src=(this.files[file]);
@@ -84,10 +89,12 @@ function Track(data) {
     this.play = function() {
         this.audio.play();
         this.pizza.drawAgain();
+        var myParent = this.parentPlayer;
         var myPizza = this.pizza;
         var myAudio = this.audio;
         var myStartingAngle = this.startingAngle;
         this.animation = setInterval(function() {
+            myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({
             startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
         });
@@ -203,6 +210,15 @@ function isElement(obj) {
       (obj.nodeType===1) && (typeof obj.style === "object") &&
       (typeof obj.ownerDocument ==="object");
   }
+}
+
+function readableDuration(seconds) {
+    var sec = Math.floor( seconds );    
+    var min = Math.floor( sec / 60 );
+    min = min >= 10 ? min : '0' + min;    
+    sec = Math.floor( sec % 60 );
+    sec = sec >= 10 ? sec : '0' + sec;    
+    return min + ':' + sec;
 }
 
 function getRandomColor() {
