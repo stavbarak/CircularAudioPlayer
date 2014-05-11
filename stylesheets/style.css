@@ -38,12 +38,14 @@
 }
 
 #tembel {
-    color: #fff;
+    color: #111;
     border-radius: 50%;
     background-color: #000;
+    font-family: Impact, Charcoal, sans-serif;
 }
 
 #timer {
+    color: #808080;
     font-size: 40px;
     display: inline-block;
     line-height: normal;
@@ -52,11 +54,20 @@
 
 .song:hover{
     cursor:pointer;
-    color: blue;
+    color: #00007A;
 }
 
 .playlist {
-    
+    background-color: #FFFFCC;
+    border-radius: 10px;
+    font-family: arial;
+    width: 200px;
+    border: solid;
+    border-width: 6px;
+    border-color: #CCCC7A;
+    border-style: ridge;
+    padding: 10px;
+    list-style-type: none;
 }
 
 .artist {
