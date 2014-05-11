@@ -15,7 +15,7 @@ function CAP_Player(data){
     
     this.paper = Raphael(this.container, data.size, data.size);
     
-    this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R);
+    this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R).attr("stroke", "none");
 
     this.tracks = [];
     this.files = [];
@@ -180,6 +180,8 @@ function PizzaSlice(data) {
         } else {
             this.drawing = paper.path(pathString);
             this.drawing.attr("fill", this.color);
+            this.drawing.attr("stroke", "none");
+            this.drawing.attr("cursor", "pointer");
             this.drawing.click(this.onClick);
         }
     };
