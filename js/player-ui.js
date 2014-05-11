@@ -32,6 +32,7 @@ function CAP_Player(data){
         this.topCircle.setAttribute("class", "over_center");
         this.timer = this.topCircle.appendChild(document.createElement("span"));
         this.timer.setAttribute("id", "timer");
+        this.timer.innerHTML = "00:00";
         for (var file in this.files) {
             var audio = this.container.appendChild(document.createElement("audio"));
             audio.src=(this.files[file]);
@@ -86,6 +87,15 @@ function Track(data) {
     
     this.pizza.drawPizza(data.paper);
     
+    this.stop = function() {
+        this.audio.pause();
+        this.audio.currentTime = 0;
+        this.pizza.updatePizza({
+            startingAngle: this.startingAngle
+        });
+        this.parentPlayer.timer.innerHTML = "00:00";
+    };
+    
     this.play = function() {
         this.audio.play();
         this.pizza.drawAgain();
@@ -96,14 +106,28 @@ function Track(data) {
         this.animation = setInterval(function() {
             myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({
-            startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
-        });
+                startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
+            });
         }, 20);
+        window.onblur = function() {
+            clearInterval(this.animation);
+            window.onfocus = function() {
+                this.animation = setInterval(function() {
+                    myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
+                    myPizza.updatePizza({
+                        startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
+                    });
+                }, 20);
+            }.bind(this);
+        }.bind(this);
+        
     };
     
     this.pause = function() {
         clearInterval(this.animation);
         this.audio.pause();
+        window.onblur = null;
+        window.onfocus = null;
     };
 
 }
