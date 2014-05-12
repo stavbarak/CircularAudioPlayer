@@ -7,6 +7,8 @@ function CAP_Player(data){
         R: data.size / 2
     };
     
+    this.size = data.size;
+    
     if (isElement(data.container)){
         this.container = data.container;    
     } else{
@@ -27,11 +29,17 @@ function CAP_Player(data){
     this.beReady = function() {
         console.log(this.files);
         var anglePerTrack = 360 / this.files.length;
+        
+        this.container.style.width = this.size + "px";
+        this.container.style.height = this.size + "px";
+        this.container.style.position = "relative";
+        
         this.topCircle = this.container.appendChild(document.createElement("div"));
-        this.topCircle.setAttribute("id", "tembel");
+        this.topCircle.setAttribute("id", "top_circle");
         this.topCircle.setAttribute("class", "over_center");
         this.timer = this.topCircle.appendChild(document.createElement("span"));
         this.timer.setAttribute("id", "timer");
+        
         this.timer.innerHTML = "00:00";
         for (var file in this.files) {
             var audio = this.container.appendChild(document.createElement("audio"));
@@ -85,8 +93,8 @@ function Track(data) {
         this.animation = setInterval(function() {
             myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({
-            startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
-        });
+                startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
+            });
         }, 20);
     };
     
