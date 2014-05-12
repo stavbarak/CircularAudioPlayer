@@ -75,18 +75,6 @@ function Track(data) {
         }
     };
     
-    this.pizza = new PizzaSlice({
-        circleX: data.circleX,
-        circleY: data.circleY,
-        circleRaduis: data.circleRaduis,
-        color: getRandomColor(),
-        angle: data.angle,
-        startingAngle: data.startingAngle,
-        onClick: this.clicking.bind(this)
-    });
-    
-    this.pizza.drawPizza(data.paper);
-    
     this.play = function() {
         this.audio.play();
         this.pizza.drawAgain();
@@ -102,15 +90,39 @@ function Track(data) {
         }, 20);
     };
     
+    this.stop = function() {
+        clearInterval(this.animation);
+        this.audio.pause();
+        this.audio.currentTime = 0;
+        this.pizza.updatePizza({
+            startingAngle: this.startingAngle
+        });
+        this.parentPlayer.timer.innerHTML = "00:00";
+    };
+    
     this.pause = function() {
         clearInterval(this.animation);
         this.audio.pause();
     };
+    
+        this.pizza = new PizzaSlice({
+        circleX: data.circleX,
+        circleY: data.circleY,
+        circleRaduis: data.circleRaduis,
+        color: getRandomColor(),
+        angle: data.angle,
+        startingAngle: data.startingAngle,
+        onClick: this.clicking.bind(this),
+        onDblClick: this.stop.bind(this)
+    });
+    
+    this.pizza.drawPizza(data.paper);
 
 }
 
 function PizzaSlice(data) {
     this.onClick = data.onClick;
+    this.onDblClick = data.onDblClick;
     this.angle = data.angle;
     this.startingAngle = data.startingAngle;
     this.color = data.color;
@@ -191,6 +203,7 @@ function PizzaSlice(data) {
             this.drawing.attr("stroke", "none");
             this.drawing.attr("cursor", "pointer");
             this.drawing.click(this.onClick);
+            this.drawing.dblclick(this.onDblClick);
         }
     };
 
