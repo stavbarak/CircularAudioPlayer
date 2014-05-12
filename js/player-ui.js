@@ -32,6 +32,7 @@ function CAP_Player(data){
         this.topCircle.setAttribute("class", "over_center");
         this.timer = this.topCircle.appendChild(document.createElement("span"));
         this.timer.setAttribute("id", "timer");
+        this.timer.innerHTML = "00:00";
         for (var file in this.files) {
             var audio = this.container.appendChild(document.createElement("audio"));
             audio.src=(this.files[file]);
