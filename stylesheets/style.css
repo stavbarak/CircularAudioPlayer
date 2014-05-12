@@ -6,11 +6,11 @@
     position:absolute;
     top: 50%;
     left:50%;
-    height: 160px; /* two thirds (2/3) of player size */
-    width: 160px; /* two thirds (2/3) of player size */
-    margin-top: -80px; /* negative one third of player size */
-    margin-left: -80px; /* negative one third of player size */
-    line-height: 160px; /* two thirds (2/3) of player size */
+    height: 66%; /* two thirds (2/3) of player size */
+    width: 66%; /* two thirds (2/3) of player size */
+    margin-top: -33%; /* negative one third of player size */
+    margin-left: -33%; /* negative one third of player size */
+    /*line-height: 160px;  two thirds (2/3) of player size */
     text-align: center;
 }
 
@@ -23,7 +23,7 @@
 
 #timer {
     color: #808080;
-    font-size: 40px;
+    /*font-size: 40px;*/
     display: inline-block;
     line-height: normal;
     vertical-align: middle;

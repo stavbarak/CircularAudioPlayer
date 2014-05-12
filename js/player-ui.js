@@ -37,8 +37,11 @@ function CAP_Player(data){
         this.topCircle = this.container.appendChild(document.createElement("div"));
         this.topCircle.setAttribute("id", "top_circle");
         this.topCircle.setAttribute("class", "over_center");
+        this.topCircle.style.lineHeight = this.size * (2 /3) + "px";
+
         this.timer = this.topCircle.appendChild(document.createElement("span"));
         this.timer.setAttribute("id", "timer");
+        this.timer.style.fontSize = this.size /6 + "px";
         
         this.timer.innerHTML = "00:00";
         for (var file in this.files) {
