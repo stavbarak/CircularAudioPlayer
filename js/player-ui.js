@@ -84,6 +84,7 @@ function CAP_Player(data){
                 artist.innerHTML = this.files[audio].artist;
                 song.innerHTML += " - " + this.files[audio].title + " " + readableDuration(this.files[audio].duration);
                 this.tracks.push(new Track({
+                    song: song,
                     parentPlayer: this,
                     audio: this.files[audio],
                     paper: this.player.paper,
@@ -95,10 +96,8 @@ function CAP_Player(data){
                 }));
             }
         } else {
-            // alert("ready request");
             this.readyRequested = true;
         }
-            
     };
     
     this.pauseAllTracks = function () {
@@ -106,16 +105,17 @@ function CAP_Player(data){
             this.tracks[track].pause();
         }
     };
-
 }
 
 function Track(data) {
     
     this.parentPlayer = data.parentPlayer;
     this.startingAngle = data.startingAngle;
+    this.song = data.song;
     
     // the DOM element of the audio tag
     this.audio = data.audio;
+    this.glow = null;
     
     this.clicking = function() {
         if (this.audio.paused || this.audio.ended) {
@@ -129,6 +129,9 @@ function Track(data) {
     this.play = function() {
         this.audio.play();
         this.pizza.drawAgain();
+        
+        this.song.className += " currently_playing";
+        
         var myParent = this.parentPlayer;
         var myPizza = this.pizza;
         var myAudio = this.audio;
@@ -146,6 +149,7 @@ function Track(data) {
     };
     
     this.stop = function() {
+        this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
         this.audio.pause();
         this.audio.currentTime = 0;
@@ -156,11 +160,21 @@ function Track(data) {
     };
     
     this.pause = function() {
+        this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
         this.audio.pause();
     };
     
-        this.pizza = new PizzaSlice({
+    this.hovering = function() {
+        this.pizza.drawing.attr("stroke", this.pizza.color);
+        this.pizza.drawing.attr("stroke-width", 2);
+    };
+    
+    this.unhover = function() {
+        this.pizza.drawing.attr("stroke", "none");
+    };
+    
+    this.pizza = new PizzaSlice({
         circleX: data.circleX,
         circleY: data.circleY,
         circleRaduis: data.circleRaduis,
@@ -168,10 +182,19 @@ function Track(data) {
         angle: data.angle,
         startingAngle: data.startingAngle,
         onClick: this.clicking.bind(this),
-        onDblClick: this.stop.bind(this)
+        onDblClick: this.stop.bind(this),
+        hoveron: this.hovering.bind(this),
+        hoveroff: this.unhover.bind(this)
     });
     
+    
+    
+    this.song.onclick = this.clicking.bind(this);
+    
     this.pizza.drawPizza(data.paper);
+    
+    this.song.onmouseover = this.hovering.bind(this);
+    this.song.onmouseout = this.unhover.bind(this);
 
 }
 
@@ -181,6 +204,8 @@ function PizzaSlice(data) {
     this.angle = data.angle;
     this.startingAngle = data.startingAngle;
     this.color = data.color;
+    this.hoveron = data.hoveron;
+    this.hoveroff = data.hoveroff;
     
     //a and b are computed from data.angle once PizzaSlice is instansiated
     this.a = Math.sin((Math.PI / 180) * this.angle);
@@ -259,9 +284,9 @@ function PizzaSlice(data) {
             this.drawing.attr("cursor", "pointer");
             this.drawing.click(this.onClick);
             this.drawing.dblclick(this.onDblClick);
+            this.drawing.hover(this.hoveron, this.hoveroff);
         }
     };
-
 }
 
 /*assitant functions (TODO: consider to move these to a seperate file)*/

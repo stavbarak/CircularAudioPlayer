@@ -13,7 +13,7 @@ function buildPlayerUI() {
     CAPS.player1.addTrack({
         filename: "mp3/JoshWoodward-Ashes-01-LetItIn.mp3",
         artist: "Josh Woodward",
-        title: "LetItIn"
+        title: "Let It In"
     });
     CAPS.player1.addTrack({
         filename: "mp3/JoshWoodward-DW-01-IWantToDestroySomethingBeautiful.mp3",
