@@ -93,7 +93,11 @@ function Track(data) {
         var myPizza = this.pizza;
         var myAudio = this.audio;
         var myStartingAngle = this.startingAngle;
+        var myTrack = this;
         this.animation = setInterval(function() {
+            if (myAudio.currentTime == myAudio.duration) {
+                myTrack.stop()
+            }
             myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({
                 startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
