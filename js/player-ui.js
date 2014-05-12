@@ -9,9 +9,16 @@ function CAP_Player(data){
     
     this.size = data.size;
     
-    if (isElement(data.container)){
+    if (isElement(data.playlist)) {
+        this.playlist = data.playlist.appendChild(document.createElement("ul"));
+    } else {
+        this.playlist = document.getElementById("tomtom").appendChild(document.createElement("ul"));
+    }
+    this.playlist.className = "playlist";
+    
+    if (isElement(data.container)) {
         this.container = data.container;    
-    } else{
+    } else {
         this.container = document.getElementById(data.container);
     }
     
@@ -19,46 +26,79 @@ function CAP_Player(data){
     
     this.player = this.paper.circle(this.circle.X , this.circle.Y, this.circle.R).attr("stroke", "none");
 
+    //track objects
     this.tracks = [];
+    //audio DOM elements
     this.files = [];
+    //playlist DOM elements
+    this.songs = [];
     
-    this.addTrack = function(filename) {
-        this.files.push(filename);
+    this.loaded = 0;
+    
+    this.readyRequested = false;
+    
+    this.addTrack = function(data) {
+        var audio = this.container.appendChild(document.createElement("audio"));
+        audio.src = data.filename;
+        audio.artist = data.artist;
+        audio.title = data.title;
+        
+        this.loaded++;
+        
+        var removeLoad = function() {
+            this.loaded--;
+            if(this.loaded === 0 && this.readyRequested) {
+               this.beReady();
+           }
+        };
+        audio.addEventListener('canplaythrough', removeLoad.bind(this), false);
+        
+        this.files.push(audio);
     };
     
     this.beReady = function() {
-        console.log(this.files);
-        var anglePerTrack = 360 / this.files.length;
-        
-        this.container.style.width = this.size + "px";
-        this.container.style.height = this.size + "px";
-        this.container.style.position = "relative";
-        
-        this.topCircle = this.container.appendChild(document.createElement("div"));
-        this.topCircle.setAttribute("id", "top_circle");
-        this.topCircle.setAttribute("class", "over_center");
-        this.topCircle.style.lineHeight = this.size * (2 /3) + "px";
-
-        this.timer = this.topCircle.appendChild(document.createElement("span"));
-        this.timer.setAttribute("id", "timer");
-        this.timer.style.fontSize = this.size /6 + "px";
-        
-        this.timer.innerHTML = "00:00";
-        for (var file in this.files) {
-            var audio = this.container.appendChild(document.createElement("audio"));
-            audio.src=(this.files[file]);
-            this.tracks.push(new Track({
-                parentPlayer: this,
-                audio: audio,
-                filename: file,
-                paper: this.player.paper,
-                circleX: this.circle.X,
-                circleY: this.circle.Y,
-                circleRaduis: this.circle.R,
-                angle: anglePerTrack,
-                startingAngle: file * anglePerTrack
-            }));
+        if(this.loaded === 0) {
+            //TODO bind the entire function to the callback of 'canplaythrough'
+            var anglePerTrack = 360 / this.files.length;
+            
+            this.container.style.width = this.size + "px";
+            this.container.style.height = this.size + "px";
+            this.container.style.position = "relative";
+            
+            this.topCircle = this.container.appendChild(document.createElement("div"));
+            this.topCircle.setAttribute("id", "top_circle");
+            this.topCircle.setAttribute("class", "over_center");
+            this.topCircle.style.lineHeight = this.size * (2 /3) + "px";
+    
+            this.timer = this.topCircle.appendChild(document.createElement("span"));
+            this.timer.setAttribute("id", "timer");
+            this.timer.style.fontSize = this.size /6 + "px";
+            
+            this.timer.innerHTML = "00:00";
+            
+            for (var audio in this.files) {
+                var song = this.playlist.appendChild(document.createElement("li"));
+                song.className = "song";
+                var artist = song.appendChild(document.createElement("span"));
+                artist.className = "artist";
+                artist.innerHTML = this.files[audio].artist;
+                song.innerHTML += " - " + this.files[audio].title + " " + readableDuration(this.files[audio].duration);
+                this.tracks.push(new Track({
+                    parentPlayer: this,
+                    audio: this.files[audio],
+                    paper: this.player.paper,
+                    circleX: this.circle.X,
+                    circleY: this.circle.Y,
+                    circleRaduis: this.circle.R,
+                    angle: anglePerTrack,
+                    startingAngle: audio * anglePerTrack
+                }));
+            }
+        } else {
+            // alert("ready request");
+            this.readyRequested = true;
         }
+            
     };
     
     this.pauseAllTracks = function () {
@@ -70,7 +110,7 @@ function CAP_Player(data){
 }
 
 function Track(data) {
-    this.file = data.filename;
+    
     this.parentPlayer = data.parentPlayer;
     this.startingAngle = data.startingAngle;
     
@@ -96,7 +136,7 @@ function Track(data) {
         var myTrack = this;
         this.animation = setInterval(function() {
             if (myAudio.currentTime == myAudio.duration) {
-                myTrack.stop()
+                myTrack.stop();
             }
             myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({

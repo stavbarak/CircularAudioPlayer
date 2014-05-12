@@ -6,11 +6,10 @@
     position:absolute;
     top: 50%;
     left:50%;
-    height: 66%; /* two thirds (2/3) of player size */
-    width: 66%; /* two thirds (2/3) of player size */
-    margin-top: -33%; /* negative one third of player size */
-    margin-left: -33%; /* negative one third of player size */
-    /*line-height: 160px;  two thirds (2/3) of player size */
+    height: 66%;
+    width: 66%;
+    margin-top: -33%;
+    margin-left: -33%;
     text-align: center;
 }
 
@@ -38,7 +37,7 @@
     background-color: #FFFFCC;
     border-radius: 10px;
     font-family: arial;
-    width: 200px;
+    width: 500px;
     border: solid;
     border-width: 6px;
     border-color: #CCCC7A;
