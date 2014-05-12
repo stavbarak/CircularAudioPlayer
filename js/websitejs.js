@@ -29,4 +29,5 @@ function buildPlayerUI() {
     //will create the pizza slices in the correct sizes with random colors
     CAPS.player1.beReady();
     //after that, clicking on the pizza slice of the track will start playing the file
+    
 }

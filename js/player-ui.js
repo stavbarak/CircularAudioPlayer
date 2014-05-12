@@ -1,6 +1,8 @@
 function CAP_Player(data){
     //CAP stands for Circular Audio Player
     
+    this.loaded = 0;
+    
     this.circle = {
         X: data.size / 2,
         Y: data.size / 2,
@@ -51,7 +53,7 @@ function CAP_Player(data){
                this.beReady();
            }
         };
-        audio.addEventListener('canplaythrough', removeLoad.bind(this), false);
+        audio.addEventListener('canplay', removeLoad.bind(this), false);
         
         this.files.push(audio);
     };
@@ -186,8 +188,6 @@ function Track(data) {
         hoveron: this.hovering.bind(this),
         hoveroff: this.unhover.bind(this)
     });
-    
-    
     
     this.song.onclick = this.clicking.bind(this);
     
