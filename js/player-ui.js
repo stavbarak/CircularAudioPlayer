@@ -55,7 +55,8 @@ function CAP_Player(data){
         audio.artist = data.artist;
         audio.title = data.title;
         
-        this.loaded++;
+        if(audio.readyState < 3)
+            this.loaded++;
         
         var removeLoad = function() {
             this.loaded--;
@@ -70,7 +71,6 @@ function CAP_Player(data){
     
     this.beReady = function() {
         if(this.loaded === 0) {
-            //TODO bind the entire function to the callback of 'canplaythrough'
             var anglePerTrack = 360 / this.files.length;
             
             this.container.style.width = this.size + "px";
