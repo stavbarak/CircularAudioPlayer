@@ -70,7 +70,7 @@ function CAP_Player(data){
             this.topCircle = this.container.appendChild(document.createElement("div"));
             this.topCircle.setAttribute("id", "top_circle");
             this.topCircle.setAttribute("class", "over_center");
-            this.topCircle.style.lineHeight = this.size * (2 /3) + "px";
+            this.topCircle.style.lineHeight = this.size * (2/3) + "px";
     
             this.timer = this.topCircle.appendChild(document.createElement("span"));
             this.timer.setAttribute("id", "timer");
@@ -115,9 +115,15 @@ function Track(data) {
     this.startingAngle = data.startingAngle;
     this.song = data.song;
     
+    this.mouseIsOver = false;
+    
     // the DOM element of the audio tag
     this.audio = data.audio;
     this.glow = null;
+    
+    this.playing = function() {
+        return !this.audio.paused;
+    };
     
     this.clicking = function() {
         if (this.audio.paused || this.audio.ended) {
@@ -130,7 +136,7 @@ function Track(data) {
     
     this.play = function() {
         this.audio.play();
-        this.pizza.drawAgain();
+        this.pizza.drawing.toFront();
         this.pizza.drawing.animate({"opacity" : 1}, 200, "linear");
         
         this.song.className += " currently_playing";
@@ -152,7 +158,7 @@ function Track(data) {
     };
     
     this.stop = function() {
-        this.pizza.drawing.attr("opacity", 0.6);
+        this.pizza.drawing.attr("opacity", 0.2);
         this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
         this.audio.pause();
@@ -164,19 +170,33 @@ function Track(data) {
     };
     
     this.pause = function() {
-        this.pizza.drawing.animate({"opacity" : 0.6}, 200, "linear");
-        this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
-        clearInterval(this.animation);
-        this.audio.pause();
+        if (this.playing()) {
+            if(this.mouseIsOver) {
+                this.pizza.drawing.animate({"opacity" : 0.6}, 200, "linear");
+            } else {
+                this.pizza.drawing.animate({"opacity" : 0.2}, 200, "linear");
+            }
+            this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
+            clearInterval(this.animation);
+            this.audio.pause();
+        }
     };
     
     this.hovering = function() {
+        this.mouseIsOver = true;
         this.pizza.drawing.attr("stroke", this.pizza.color);
         this.pizza.drawing.attr("stroke-width", 2);
+        if(!this.playing()) {
+            this.pizza.drawing.animate({"opacity" : 0.6}, 200, "linear");
+        }
     };
     
     this.unhover = function() {
+        this.mouseIsOver = false;
         this.pizza.drawing.attr("stroke", "none");
+        if(!this.playing()) {
+            this.pizza.drawing.animate({"opacity" : 0.2}, 200, "linear");
+        }
     };
     
     this.pizza = new PizzaSlice({
@@ -283,7 +303,7 @@ function PizzaSlice(data) {
         } else {
             this.drawing = paper.path(pathString);
             this.drawing.attr("fill", this.color);
-            this.drawing.attr("opacity", 0.6);
+            this.drawing.attr("opacity", 0.2);
             this.drawing.attr("stroke", "none");
             this.drawing.attr("cursor", "pointer");
             this.drawing.click(this.onClick);
