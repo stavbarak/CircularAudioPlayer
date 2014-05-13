@@ -131,6 +131,7 @@ function Track(data) {
     this.play = function() {
         this.audio.play();
         this.pizza.drawAgain();
+        this.pizza.drawing.animate({"opacity" : 1}, 200, "linear");
         
         this.song.className += " currently_playing";
         
@@ -151,6 +152,7 @@ function Track(data) {
     };
     
     this.stop = function() {
+        this.pizza.drawing.attr("opacity", 0.6);
         this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
         this.audio.pause();
@@ -162,6 +164,7 @@ function Track(data) {
     };
     
     this.pause = function() {
+        this.pizza.drawing.animate({"opacity" : 0.6}, 200, "linear");
         this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
         this.audio.pause();
@@ -280,6 +283,7 @@ function PizzaSlice(data) {
         } else {
             this.drawing = paper.path(pathString);
             this.drawing.attr("fill", this.color);
+            this.drawing.attr("opacity", 0.6);
             this.drawing.attr("stroke", "none");
             this.drawing.attr("cursor", "pointer");
             this.drawing.click(this.onClick);
