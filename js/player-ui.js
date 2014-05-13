@@ -1,6 +1,16 @@
 function CAP_Player(data){
     //CAP stands for Circular Audio Player
     
+    //define global constants
+    if(!window.CAP_Globals) {
+        window.CAP_Globals = {
+            refreshRate: 20,
+            pausedOpacity: 0.2,
+            hoverOpacity: 0.6,
+            playOpacity: 1
+        };
+    }
+    
     this.loaded = 0;
     
     this.circle = {
@@ -107,6 +117,12 @@ function CAP_Player(data){
             this.tracks[track].pause();
         }
     };
+    
+    this.stopAllTracks = function () {
+        for (var track in this.tracks) {
+            this.tracks[track].stop();
+        }
+    };
 }
 
 function Track(data) {
@@ -137,7 +153,7 @@ function Track(data) {
     this.play = function() {
         this.audio.play();
         this.pizza.drawing.toFront();
-        this.pizza.drawing.animate({"opacity" : 1}, 200, "linear");
+        this.pizza.drawing.animate({"opacity" : CAP_Globals.playOpacity}, 200, "linear");
         
         this.song.className += " currently_playing";
         
@@ -154,11 +170,11 @@ function Track(data) {
             myPizza.updatePizza({
                 startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
             });
-        }, 20);
+        }, CAP_Globals.refreshRate);
     };
     
     this.stop = function() {
-        this.pizza.drawing.attr("opacity", 0.2);
+        this.pizza.drawing.attr("opacity", CAP_Globals.pausedOpacity);
         this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
         this.audio.pause();
@@ -172,9 +188,9 @@ function Track(data) {
     this.pause = function() {
         if (this.playing()) {
             if(this.mouseIsOver) {
-                this.pizza.drawing.animate({"opacity" : 0.6}, 200, "linear");
+                this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
             } else {
-                this.pizza.drawing.animate({"opacity" : 0.2}, 200, "linear");
+                this.pizza.drawing.animate({"opacity" : CAP_Globals.pausedOpacity}, 200, "linear");
             }
             this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
             clearInterval(this.animation);
@@ -187,7 +203,7 @@ function Track(data) {
         this.pizza.drawing.attr("stroke", this.pizza.color);
         this.pizza.drawing.attr("stroke-width", 2);
         if(!this.playing()) {
-            this.pizza.drawing.animate({"opacity" : 0.6}, 200, "linear");
+            this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
         }
     };
     
@@ -195,7 +211,7 @@ function Track(data) {
         this.mouseIsOver = false;
         this.pizza.drawing.attr("stroke", "none");
         if(!this.playing()) {
-            this.pizza.drawing.animate({"opacity" : 0.2}, 200, "linear");
+            this.pizza.drawing.animate({"opacity" : CAP_Globals.pausedOpacity}, 200, "linear");
         }
     };
     
