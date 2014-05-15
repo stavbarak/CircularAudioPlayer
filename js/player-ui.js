@@ -5,9 +5,10 @@ function CAP_Player(data){
     if(!window.CAP_Globals) {
         window.CAP_Globals = {
             refreshRate: 20,
-            pausedOpacity: 0.2,
+            pausedOpacity: 0.27,
             hoverOpacity: 0.6,
-            playOpacity: 1
+            playOpacity: 1,
+            speed: 2 // or is var somewhere else ?
         };
     }
     
@@ -200,8 +201,8 @@ function Track(data) {
     
     this.hovering = function() {
         this.mouseIsOver = true;
-        this.pizza.drawing.attr("stroke", this.pizza.color);
-        this.pizza.drawing.attr("stroke-width", 2);
+        //this.pizza.drawing.attr("stroke", this.pizza.color);
+        //this.pizza.drawing.attr("stroke-width", 2); resize bumps the shape
         if(!this.playing()) {
             this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
         }
@@ -356,7 +357,7 @@ function readableDuration(seconds) {
 }
 
 function getRandomColor() {
-    var letters = '0123456789ABCDEF'.split('');
+    var letters = '0123456789ACACFCAF'.split('');
     var color = '#';
     for (var i = 0; i < 6; i++ ) {
         color += letters[Math.floor(Math.random() * 16)];
