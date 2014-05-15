@@ -5,7 +5,7 @@ function buildPlayerUI() {
     CAPS.player1 = new CAP_Player({
         //container can either be a string of the ID of the element, or the DOM element itself
         container: "playerSpot1",
-        size: 200,
+        size: 75,
         playlist: "tomtom"
     });
     
