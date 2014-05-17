@@ -8,7 +8,7 @@ function CAP_Player(data){
             pausedOpacity: 0.27,
             hoverOpacity: 0.6,
             playOpacity: 1,
-            speed: 2 // or is var somewhere else ?
+            colors: ["#FF0000", "#0000FF", "#00FF00", "#CC0099", "#FFFF00", "#007A29", "#E65C00", "#00B2B2"]
         };
     }
     
@@ -89,6 +89,9 @@ function CAP_Player(data){
             
             this.timer.innerHTML = "00:00";
             
+            var colors = CAP_Globals.colors;
+            var color;
+            
             for (var audio in this.files) {
                 var song = this.playlist.appendChild(document.createElement("li"));
                 song.className = "song";
@@ -96,9 +99,11 @@ function CAP_Player(data){
                 artist.className = "artist";
                 artist.innerHTML = this.files[audio].artist;
                 song.innerHTML += " - " + this.files[audio].title + " " + readableDuration(this.files[audio].duration);
+                color = Math.floor(Math.random() * colors.length);
                 this.tracks.push(new Track({
                     song: song,
                     parentPlayer: this,
+                    color: colors[color],
                     audio: this.files[audio],
                     paper: this.player.paper,
                     circleX: this.circle.X,
@@ -107,6 +112,7 @@ function CAP_Player(data){
                     angle: anglePerTrack,
                     startingAngle: audio * anglePerTrack
                 }));
+                colors.splice(color, 1);
             }
         } else {
             this.readyRequested = true;
@@ -220,7 +226,7 @@ function Track(data) {
         circleX: data.circleX,
         circleY: data.circleY,
         circleRaduis: data.circleRaduis,
-        color: getRandomColor(),
+        color: data.color,
         angle: data.angle,
         startingAngle: data.startingAngle,
         onClick: this.clicking.bind(this),
