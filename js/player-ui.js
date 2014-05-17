@@ -8,7 +8,8 @@ function CAP_Player(data){
             pausedOpacity: 0.27,
             hoverOpacity: 0.6,
             playOpacity: 1,
-            colors: ["#FF0000", "#0000FF", "#00FF00", "#CC0099", "#FFFF00", "#007A29", "#E65C00", "#00B2B2"]
+            colors: ["#FF0000", "#0000FF", "#00FF00", "#CC0099", "#FFFF00", "#007A29", "#E65C00", "#00B2B2"],
+            colorSelection: "linear" //can be "linear", "reverse", "random" - default is linear
         };
     }
     
@@ -99,7 +100,18 @@ function CAP_Player(data){
                 artist.className = "artist";
                 artist.innerHTML = this.files[audio].artist;
                 song.innerHTML += " - " + this.files[audio].title + " " + readableDuration(this.files[audio].duration);
-                color = Math.floor(Math.random() * colors.length);
+                switch(CAP_Globals.colorSelection) {
+                    case "random":
+                        color = Math.floor(Math.random() * colors.length);
+                        break;
+                    case "reverse":
+                        color = colors.length -1;
+                        break;
+                    case "linear":
+                    default:
+                        color = 0;
+                        break;
+                }
                 this.tracks.push(new Track({
                     song: song,
                     parentPlayer: this,
