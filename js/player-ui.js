@@ -66,7 +66,7 @@ function CAP_Player(data){
                this.beReady();
            }
         };
-        audio.addEventListener('canplay', removeLoad.bind(this), false);
+        audio.addEventListener('loadedmetadata', removeLoad.bind(this), false);
         
         this.files.push(audio);
     };
