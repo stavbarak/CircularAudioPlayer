@@ -47,6 +47,7 @@ function CAP_Player(data){
     //playlist DOM elements
     this.songs = [];
     
+    //this is the variable that counts how many tracks still need loading
     this.loaded = 0;
     
     this.readyRequested = false;
@@ -57,6 +58,7 @@ function CAP_Player(data){
         audio.artist = data.artist;
         audio.title = data.title;
         
+        //if audio was not already loaded, increment the loaded variable
         if(audio.readyState < 3)
             this.loaded++;
         
@@ -66,12 +68,14 @@ function CAP_Player(data){
                this.beReady();
            }
         };
+        //bind a function to execute when the metadata is loaded to decrement the loading variable
         audio.addEventListener('loadedmetadata', removeLoad.bind(this), false);
         
         this.files.push(audio);
     };
     
     this.beReady = function() {
+        //check first if no tracks are left unloaded, see 'else' below
         if(this.loaded === 0) {
             var anglePerTrack = 360 / this.files.length;
             
@@ -126,6 +130,7 @@ function CAP_Player(data){
                 }));
                 colors.splice(color, 1);
             }
+        //if there are still tracks left to be loaded, put a flag up. the flag will be tested every time a new track finishes its loading
         } else {
             this.readyRequested = true;
         }
