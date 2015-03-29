@@ -84,7 +84,6 @@ function CAP_Player(data){
 				totalTime += this.files[audio].duration;
 			}
 
-			console.log(totalTime);
             var anglePerTrack = 360 / this.files.length;
             
             this.container.style.width = this.size + "px";
