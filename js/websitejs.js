@@ -1,33 +1,35 @@
 function buildPlayerUI() {
     //stands for CAP Scope
-    var CAPS = {};
+    //var CAPS = {};
     
+    //example end product code.
     CAPS.player1 = new CAP_Player({
         //container can either be a string of the ID of the element, or the DOM element itself
         container: "playerSpot1",
-        size: 75,
+        size: 180,
         playlist: "tomtom"
-    });
-    
-    //example end product code.
-    CAPS.player1.addTrack({
-        filename: "mp3/Chorus1.mp3",
-        artist: "Josh Woodward",
-        title: "Let It In"
-    });
-    CAPS.player1.addTrack({
-        filename: "mp3/Chorus2.mp3",
-        artist: "Josh Woodward",
-        title: "I Want To Destroy Something Beautiful"
-    });
-    CAPS.player1.addTrack({
-        filename: "mp3/Chorus3.mp3",
-        artist: "Josh Woodward",
-        title: "Nincompoop"
-    });
-    
-    //will create the pizza slices in the correct sizes with random colors
-    CAPS.player1.beReady();
+    })
+	.addTrack({
+        filename: "mp3/01 - Chandelier.mp3",
+        artist: "Sia",
+        title: "Chandalier"
+    })
+	.addTrack({
+        filename: "mp3/02 - Big Girls Cry.mp3",
+        artist: "Sia",
+        title: "Big Girls Cry"
+    })
+	.addTrack({
+        filename: "mp3/03 - Burn the Pages.mp3",
+        artist: "Sia",
+        title: "Burn the pages"
+    })
+	.addTrack({
+        filename: "mp3/04 - Eye of the Needle.mp3",
+        artist: "Sia",
+        title: "Eye of the Needle"
+    })
+	.beReady();
     //after that, clicking on the pizza slice of the track will start playing the file
     
 }

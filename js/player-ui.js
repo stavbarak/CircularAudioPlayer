@@ -72,11 +72,19 @@ function CAP_Player(data){
         audio.addEventListener('loadedmetadata', removeLoad.bind(this), false);
         
         this.files.push(audio);
+
+		return this;
     };
     
     this.beReady = function() {
         //check first if no tracks are left unloaded, see 'else' below
         if(this.loaded === 0) {
+			var totalTime = 0;
+			for (var audio in this.files) {
+				totalTime += this.files[audio].duration;
+			}
+
+			console.log(totalTime);
             var anglePerTrack = 360 / this.files.length;
             
             this.container.style.width = this.size + "px";
@@ -97,6 +105,7 @@ function CAP_Player(data){
             var colors = CAP_Globals.colors;
             var color;
             
+			var angleSoFar = 0;
             for (var audio in this.files) {
                 var song = this.playlist.appendChild(document.createElement("li"));
                 song.className = "song";
@@ -125,15 +134,17 @@ function CAP_Player(data){
                     circleX: this.circle.X,
                     circleY: this.circle.Y,
                     circleRaduis: this.circle.R,
-                    angle: anglePerTrack,
-                    startingAngle: audio * anglePerTrack
+                    angle: 360 * (this.files[audio].duration/totalTime),
+                    startingAngle: angleSoFar
                 }));
+				angleSoFar += 360 * (this.files[audio].duration/totalTime);
                 colors.splice(color, 1);
             }
         //if there are still tracks left to be loaded, put a flag up. the flag will be tested every time a new track finishes its loading
         } else {
             this.readyRequested = true;
         }
+		return this;
     };
     
     this.pauseAllTracks = function () {
