@@ -135,7 +135,6 @@ function CAP_Player(data){
             this.container.style.height = this.size + "px";
             this.container.style.position = "relative";
             
-			//◼
             this.topCircle = this.container.appendChild(document.createElement("div"));
             this.topCircle.setAttribute("id", "top_circle");
             this.topCircle.setAttribute("class", "over_center");
@@ -148,9 +147,7 @@ function CAP_Player(data){
 				this.mouseHoveringOnCenter = false;
 				this.timer.innerHTML="";
 			}.bind(this));
-    
-			//debug test
-			//this.topCircle.style["background-image"] = 'url("pics/alba.png")';
+
 			this.trackImageHolder = this.topCircle.appendChild(document.createElement("div"));
 			this.trackImageHolder.setAttribute("id", "track_image_holder");
 
@@ -230,6 +227,7 @@ function Track(data) {
     this.startingAngle = data.startingAngle;
     this.song = data.song;
 	this.picture = data.picture;
+	this.inserted = false;
     
     this.mouseIsOver = false;
     
@@ -237,9 +235,13 @@ function Track(data) {
     this.audio = data.audio;
     this.glow = null;
     
-    this.playing = function() {
+    this.isPlaying = function() {
         return !this.audio.paused;
     };
+
+	this.isStopped = function() {
+        return !this.isPlaying() && this.audio.currentTime === 0;
+	};
     
     this.clicking = function() {
         if (this.audio.paused || this.audio.ended) {
@@ -249,6 +251,46 @@ function Track(data) {
             this.pause();
         }
     };
+
+	this.insertTrackAnimation = function() {
+		if(this.inserted)
+			return;
+		this.inserted = true;
+		var radiusMultiplier = 1.0;
+		var myPizza = this.pizza;
+		var myParent = this.parentPlayer;
+		var animationId = setInterval(function() {
+			//(TotalDistance * RefreshRate) / TotalTime
+			var step = (0.1 * CAP_Globals.refreshRate) / 200;
+			if((radiusMultiplier - step) <= 0.9) {
+				radiusMultiplier = 0.9;
+				myPizza.updatePizza({radius: myParent.circle.R * radiusMultiplier});
+				clearInterval(animationId);
+			}
+			radiusMultiplier -= step;
+			myPizza.updatePizza({radius: myParent.circle.R * radiusMultiplier});
+		}, CAP_Globals.refreshRate);
+	};
+
+	this.ejectTrackAnimation = function() {
+		if(!this.inserted)
+			return;
+		this.inserted = false;
+		var radiusMultiplier = 0.9;
+		var myPizza = this.pizza;
+		var myParent = this.parentPlayer;
+		var animationId = setInterval(function() {
+			//(TotalDistance * RefreshRate) / TotalTime
+			var step = (0.1 * CAP_Globals.refreshRate) / 200;
+			if((radiusMultiplier + step) >= 1.0) {
+				radiusMultiplier = 1.0;
+				myPizza.updatePizza({radius: myParent.circle.R * radiusMultiplier});
+				clearInterval(animationId);
+			}
+			radiusMultiplier += step;
+			myPizza.updatePizza({radius: myParent.circle.R * radiusMultiplier});
+		}, CAP_Globals.refreshRate);
+	};
     
     this.play = function() {
 		this.parentPlayer.setPictureInCircle(this.picture);
@@ -263,6 +305,7 @@ function Track(data) {
         var myAudio = this.audio;
         var myStartingAngle = this.startingAngle;
         var myTrack = this;
+		this.insertTrackAnimation();
         this.animation = setInterval(function() {
             if (myAudio.currentTime == myAudio.duration) {
                 myTrack.stop();
@@ -270,12 +313,15 @@ function Track(data) {
 			if (!myParent.mouseHoveringOnCenter)
             	myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({
-                startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
+                startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360)
             });
         }, CAP_Globals.refreshRate);
     };
     
     this.stop = function() {
+		if(this.isStopped())
+			return;
+		this.ejectTrackAnimation();
 		this.parentPlayer.clearPictureInCircle();
         this.pizza.drawing.attr("opacity", CAP_Globals.pausedOpacity);
         this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
@@ -289,7 +335,10 @@ function Track(data) {
     };
     
     this.pause = function() {
-        if (this.playing()) {
+		if(!this.isPlaying())
+			return;
+		this.ejectTrackAnimation();
+        if (this.isPlaying()) {
             if(this.mouseIsOver) {
                 this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
             } else {
@@ -305,7 +354,7 @@ function Track(data) {
         this.mouseIsOver = true;
         //this.pizza.drawing.attr("stroke", this.pizza.color);
         //this.pizza.drawing.attr("stroke-width", 2); resize bumps the shape
-        if(!this.playing()) {
+        if(!this.isPlaying()) {
             this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
         }
     };
@@ -313,7 +362,7 @@ function Track(data) {
     this.unhover = function() {
         this.mouseIsOver = false;
         this.pizza.drawing.attr("stroke", "none");
-        if(!this.playing()) {
+        if(!this.isPlaying()) {
             this.pizza.drawing.animate({"opacity" : CAP_Globals.pausedOpacity}, 200, "linear");
         }
     };
@@ -374,10 +423,19 @@ function PizzaSlice(data) {
     };
     
     this.updatePizza = function(data) {
-        if(data.angle) {
+        if(data.angle !== undefined) {
             this.angle = data.angle;
         }
-        this.startingAngle = data.startingAngle;
+		if(data.radius !== undefined) {
+			this.circle.R = data.radius;
+			this.referencePoint = {
+				X: this.circle.X - this.circle.R,
+				Y: this.circle.Y
+			};
+		}
+		if(data.startingAngle !== undefined) {
+	        this.startingAngle = data.startingAngle;
+		}
         
         this.a = Math.sin((Math.PI / 180) * this.angle);
         this.b = Math.cos((Math.PI / 180) * this.angle);
