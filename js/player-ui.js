@@ -14,6 +14,8 @@ function CAP_Player(data){
     }
     
     this.loaded = 0;
+
+	this.mouseHoveringOnCenter = false;
     
     this.circle = {
         X: data.size / 2,
@@ -57,6 +59,7 @@ function CAP_Player(data){
         audio.src = data.filename;
         audio.artist = data.artist;
         audio.title = data.title;
+		audio.picture = data.picture;
         
         //if audio was not already loaded, increment the loaded variable
         if(audio.readyState < 3)
@@ -75,6 +78,48 @@ function CAP_Player(data){
 
 		return this;
     };
+
+	this.currentPictureInCircle = null;
+	this.inCircleAnimation = null;
+
+	this.clearPictureInCircle = function() {
+		if(this.inCircleAnimation !== null) {
+			console.log("clearing interval " + this.inCircleAnimation);
+			window.clearInterval(this.inCircleAnimation);
+			this.inCircleAnimation = null;
+		}
+		if(isElement(this.currentPictureInCircle)) {
+			console.log("removing image " + this.currentPictureInCircle);
+			this.trackImageHolder.removeChild(this.currentPictureInCircle);
+			this.currentPictureInCircle = null;
+		}
+	}
+
+	this.setPictureInCircle = function(picture) {
+		console.log("called!");
+		var imageHolder = this.trackImageHolder;
+		var incomingPicture = imageHolder.appendChild(document.createElement("img"));
+		incomingPicture.style["opacity"] = 0;
+		incomingPicture.setAttribute("src", picture);
+		var outgoingPicture = this.currentPictureInCircle;
+		this.currentPictureInCircle = incomingPicture;
+
+		var step = CAP_Globals.refreshRate / 500;
+		var opacity = 0;
+		this.inCircleAnimation = window.setInterval(function() {
+				console.log("going");
+				if((opacity + step) >= 1) {
+					incomingPicture.style["opacity"] = 1;
+					if(isElement(outgoingPicture))					
+						imageHolder.removeChild(outgoingPicture);
+					window.clearInterval(goingInAnimation);
+				} else {
+					opacity += step;
+					incomingPicture.style["opacity"] = opacity;
+				}
+			}, CAP_Globals.refreshRate);
+		var goingInAnimation = this.inCircleAnimation;
+	}
     
     this.beReady = function() {
         //check first if no tracks are left unloaded, see 'else' below
@@ -90,16 +135,35 @@ function CAP_Player(data){
             this.container.style.height = this.size + "px";
             this.container.style.position = "relative";
             
+			//◼
             this.topCircle = this.container.appendChild(document.createElement("div"));
             this.topCircle.setAttribute("id", "top_circle");
             this.topCircle.setAttribute("class", "over_center");
             this.topCircle.style.lineHeight = this.size * (2/3) + "px";
+			this.topCircle.addEventListener("mouseover", function() {
+				this.mouseHoveringOnCenter = true;
+				this.timer.innerHTML="◼";
+			}.bind(this));
+			this.topCircle.addEventListener("mouseout", function() {
+				this.mouseHoveringOnCenter = false;
+				this.timer.innerHTML="";
+			}.bind(this));
     
-            this.timer = this.topCircle.appendChild(document.createElement("span"));
+			//debug test
+			//this.topCircle.style["background-image"] = 'url("pics/alba.png")';
+			this.trackImageHolder = this.topCircle.appendChild(document.createElement("div"));
+			this.trackImageHolder.setAttribute("id", "track_image_holder");
+
+			this.timeHolder = this.topCircle.appendChild(document.createElement("div"));
+			this.timeHolder.setAttribute("id", "time_holder");
+            this.timer = this.timeHolder.appendChild(document.createElement("span"));
             this.timer.setAttribute("id", "timer");
             this.timer.style.fontSize = this.size /6 + "px";
+			this.timer.addEventListener("click", function () {
+				this.stopAllTracks();
+			}.bind(this));
             
-            this.timer.innerHTML = "00:00";
+            this.timer.innerHTML = "";
             
             var colors = CAP_Globals.colors;
             var color;
@@ -130,6 +194,7 @@ function CAP_Player(data){
                     color: colors[color],
                     audio: this.files[audio],
                     paper: this.player.paper,
+					picture: this.files[audio].picture,
                     circleX: this.circle.X,
                     circleY: this.circle.Y,
                     circleRaduis: this.circle.R,
@@ -164,6 +229,7 @@ function Track(data) {
     this.parentPlayer = data.parentPlayer;
     this.startingAngle = data.startingAngle;
     this.song = data.song;
+	this.picture = data.picture;
     
     this.mouseIsOver = false;
     
@@ -185,6 +251,7 @@ function Track(data) {
     };
     
     this.play = function() {
+		this.parentPlayer.setPictureInCircle(this.picture);
         this.audio.play();
         this.pizza.drawing.toFront();
         this.pizza.drawing.animate({"opacity" : CAP_Globals.playOpacity}, 200, "linear");
@@ -200,7 +267,8 @@ function Track(data) {
             if (myAudio.currentTime == myAudio.duration) {
                 myTrack.stop();
             }
-            myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
+			if (!myParent.mouseHoveringOnCenter)
+            	myParent.timer.innerHTML = readableDuration(myAudio.currentTime);
             myPizza.updatePizza({
                 startingAngle: myStartingAngle + ((myAudio.currentTime / myAudio.duration) * 360),
             });
@@ -208,6 +276,7 @@ function Track(data) {
     };
     
     this.stop = function() {
+		this.parentPlayer.clearPictureInCircle();
         this.pizza.drawing.attr("opacity", CAP_Globals.pausedOpacity);
         this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
         clearInterval(this.animation);
@@ -216,7 +285,7 @@ function Track(data) {
         this.pizza.updatePizza({
             startingAngle: this.startingAngle
         });
-        this.parentPlayer.timer.innerHTML = "00:00";
+        this.parentPlayer.timer.innerHTML = "";
     };
     
     this.pause = function() {
