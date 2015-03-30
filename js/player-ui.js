@@ -53,7 +53,7 @@ function CAP_Player(data){
     this.loaded = 0;
     
     this.readyRequested = false;
-    
+
     this.addTrack = function(data) {
         var audio = this.container.appendChild(document.createElement("audio"));
         audio.src = data.filename;
@@ -78,6 +78,13 @@ function CAP_Player(data){
 
 		return this;
     };
+
+	this.addTracks = function(data) {
+		for(track in data) {
+			this.addTrack(data[track]);
+		}
+		return this;
+	}
 
 	this.currentPictureInCircle = null;
 	this.inCircleAnimation = null;
@@ -335,10 +342,8 @@ function Track(data) {
     };
     
     this.pause = function() {
-		if(!this.isPlaying())
-			return;
-		this.ejectTrackAnimation();
         if (this.isPlaying()) {
+			this.ejectTrackAnimation();
             if(this.mouseIsOver) {
                 this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
             } else {
@@ -347,6 +352,9 @@ function Track(data) {
             this.song.className = this.song.className.replace( /(?:^|\s)currently_playing(?!\S)/g , '' );
             clearInterval(this.animation);
             this.audio.pause();
+			if(this.isStopped()) {
+				this.parentPlayer.timer.innerHTML = "";
+			}
         }
     };
     
@@ -386,7 +394,6 @@ function Track(data) {
     
     this.song.onmouseover = this.hovering.bind(this);
     this.song.onmouseout = this.unhover.bind(this);
-
 }
 
 function PizzaSlice(data) {

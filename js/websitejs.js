@@ -9,6 +9,39 @@ function buildPlayerUI() {
         size: 280,
         playlist: "tomtom"
     })
+	.addTracks([
+		{
+			filename: "mp3/01 - Chandelier.mp3",
+    	    artist: "Sia",
+			picture: "pics/house.png",
+	        title: "Chandalier"
+		},
+		{
+			filename: "mp3/02 - Big Girls Cry.mp3",
+   		    artist: "Sia",
+			picture: "pics/alba.png",
+        	title: "Big Girls Cry"
+		},
+		{
+			filename: "mp3/03 - Burn the Pages.mp3",
+    	    artist: "Sia",
+			picture: "pics/kitty.png",
+	        title: "Burn the pages"
+		},
+		{
+			filename: "mp3/04 - Eye of the Needle.mp3",
+        	artist: "Sia",
+			picture: "pics/paint.png",
+        	title: "Eye of the Needle"
+		},
+		{
+			filename: "mp3/05 - Hostage.mp3",
+   	    	artist: "Sia",
+			picture: "pics/laser.png",
+        	title: "Hostage"
+		}]).beReady();
+
+/*
 	.addTrack({
         filename: "mp3/01 - Chandelier.mp3",
         artist: "Sia",
@@ -58,6 +91,7 @@ function buildPlayerUI() {
         title: "Elastic Heart"
     })
 	.beReady();
+*/
     //after that, clicking on the pizza slice of the track will start playing the file
     
 }
