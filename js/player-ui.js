@@ -102,12 +102,8 @@ function CAP_Player(data){
 
 	this.setPictureInCircle = function(picture) {
 		var imageHolder = this.trackImageHolder;
-		//var outgoingPicture = this.currentPictureInCircle;
 		var incomingPicture = imageHolder.appendChild(document.createElement("div"));
 		incomingPicture.style["opacity"] = 0;
-		//incomingPicture.style.borderRadius = "50%";
-		//incomingPicture.style.width = "100%";
-		//incomingPicture.style.height = "100%";
 		incomingPicture.style.backgroundImage="url('" + picture + "')";
 		this.currentPictureInCircle = incomingPicture;
 
@@ -117,9 +113,6 @@ function CAP_Player(data){
 				if((opacity + step) >= 1) {
 					imageHolder.style.backgroundImage = "url('" + picture + "')";
 					imageHolder.removeChild(incomingPicture);
-					//incomingPicture.style["opacity"] = 1;
-					//if(isElement(outgoingPicture))					
-					//	imageHolder.removeChild(outgoingPicture);
 					window.clearInterval(goingInAnimation);
 				} else {
 					opacity += step;
@@ -361,8 +354,6 @@ function Track(data) {
     
     this.hovering = function() {
         this.mouseIsOver = true;
-        //this.pizza.drawing.attr("stroke", this.pizza.color);
-        //this.pizza.drawing.attr("stroke-width", 2); resize bumps the shape
         if(!this.isPlaying()) {
             this.pizza.drawing.animate({"opacity" : CAP_Globals.hoverOpacity}, 200, "linear");
         }
