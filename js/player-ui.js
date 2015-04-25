@@ -95,30 +95,31 @@ function CAP_Player(data){
 			window.clearInterval(this.inCircleAnimation);
 			this.inCircleAnimation = null;
 		}
-		if(isElement(this.currentPictureInCircle)) {
-			console.log("removing image " + this.currentPictureInCircle);
-			this.trackImageHolder.removeChild(this.currentPictureInCircle);
-			this.currentPictureInCircle = null;
-		}
+		this.trackImageHolder.style.backgroundImage = "";
+		this.currentPictureInCircle = null;
+
 	}
 
 	this.setPictureInCircle = function(picture) {
-		console.log("called!");
 		var imageHolder = this.trackImageHolder;
-		var incomingPicture = imageHolder.appendChild(document.createElement("img"));
+		//var outgoingPicture = this.currentPictureInCircle;
+		var incomingPicture = imageHolder.appendChild(document.createElement("div"));
 		incomingPicture.style["opacity"] = 0;
-		incomingPicture.setAttribute("src", picture);
-		var outgoingPicture = this.currentPictureInCircle;
+		//incomingPicture.style.borderRadius = "50%";
+		//incomingPicture.style.width = "100%";
+		//incomingPicture.style.height = "100%";
+		incomingPicture.style.backgroundImage="url('" + picture + "')";
 		this.currentPictureInCircle = incomingPicture;
 
 		var step = CAP_Globals.refreshRate / 500;
 		var opacity = 0;
 		this.inCircleAnimation = window.setInterval(function() {
-				console.log("going");
 				if((opacity + step) >= 1) {
-					incomingPicture.style["opacity"] = 1;
-					if(isElement(outgoingPicture))					
-						imageHolder.removeChild(outgoingPicture);
+					imageHolder.style.backgroundImage = "url('" + picture + "')";
+					imageHolder.removeChild(incomingPicture);
+					//incomingPicture.style["opacity"] = 1;
+					//if(isElement(outgoingPicture))					
+					//	imageHolder.removeChild(outgoingPicture);
 					window.clearInterval(goingInAnimation);
 				} else {
 					opacity += step;

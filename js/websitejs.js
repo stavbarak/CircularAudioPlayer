@@ -39,7 +39,26 @@ function buildPlayerUI() {
    	    	artist: "Sia",
 			picture: "pics/laser.png",
         	title: "Hostage"
-		}]).beReady();
+		},
+		{
+        	filename: "mp3/06 - Straight for the Knife.mp3",
+        	artist: "Sia",
+			picture: "pics/smile.png",
+        	title: "Straight for the Knife"
+    	},
+		{
+    	    filename: "mp3/07 - Fair Game.mp3",
+    	    artist: "Sia",
+			picture: "pics/sand.png",
+    	    title: "Fair Game"
+    	},
+		{
+        	filename: "mp3/08 - Elastic Heart.mp3",
+        	artist: "Sia",
+			picture: "pics/beyleys.png",
+        	title: "Elastic Heart"
+		}
+    ]).beReady();
 
 /*
 	.addTrack({
