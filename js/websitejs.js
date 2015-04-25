@@ -11,106 +11,25 @@ function buildPlayerUI() {
     })
 	.addTracks([
 		{
-			filename: "mp3/01 - Chandelier.mp3",
-    	    artist: "Sia",
+			filename: "mp3/critical dad.mp3",
+    	    artist: "Critical Dad",
 			picture: "pics/house.png",
-	        title: "Chandalier"
+	        title: "Critical Dad"
 		},
 		{
-			filename: "mp3/02 - Big Girls Cry.mp3",
-   		    artist: "Sia",
+			filename: "mp3/mannet.mp3",
+   		    artist: "Mannet",
 			picture: "pics/alba.png",
-        	title: "Big Girls Cry"
+        	title: "Mannet"
 		},
 		{
-			filename: "mp3/03 - Burn the Pages.mp3",
-    	    artist: "Sia",
+			filename: "mp3/nologic.mp3",
+    	    artist: "No Logic",
 			picture: "pics/kitty.png",
-	        title: "Burn the pages"
-		},
-		{
-			filename: "mp3/04 - Eye of the Needle.mp3",
-        	artist: "Sia",
-			picture: "pics/paint.png",
-        	title: "Eye of the Needle"
-		},
-		{
-			filename: "mp3/05 - Hostage.mp3",
-   	    	artist: "Sia",
-			picture: "pics/laser.png",
-        	title: "Hostage"
-		},
-		{
-        	filename: "mp3/06 - Straight for the Knife.mp3",
-        	artist: "Sia",
-			picture: "pics/smile.png",
-        	title: "Straight for the Knife"
-    	},
-		{
-    	    filename: "mp3/07 - Fair Game.mp3",
-    	    artist: "Sia",
-			picture: "pics/sand.png",
-    	    title: "Fair Game"
-    	},
-		{
-        	filename: "mp3/08 - Elastic Heart.mp3",
-        	artist: "Sia",
-			picture: "pics/beyleys.png",
-        	title: "Elastic Heart"
+	        title: "No Logic"
 		}
     ]).beReady();
 
-/*
-	.addTrack({
-        filename: "mp3/01 - Chandelier.mp3",
-        artist: "Sia",
-		picture: "pics/house.png",
-        title: "Chandalier"
-    })
-	.addTrack({
-        filename: "mp3/02 - Big Girls Cry.mp3",
-        artist: "Sia",
-		picture: "pics/alba.png",
-        title: "Big Girls Cry"
-    })
-	.addTrack({
-        filename: "mp3/03 - Burn the Pages.mp3",
-        artist: "Sia",
-		picture: "pics/kitty.png",
-        title: "Burn the pages"
-    })
-	.addTrack({
-        filename: "mp3/04 - Eye of the Needle.mp3",
-        artist: "Sia",
-		picture: "pics/paint.png",
-        title: "Eye of the Needle"
-    })
-	.addTrack({
-        filename: "mp3/05 - Hostage.mp3",
-        artist: "Sia",
-		picture: "pics/laser.png",
-        title: "Hostage"
-    })
-	.addTrack({
-        filename: "mp3/06 - Straight for the Knife.mp3",
-        artist: "Sia",
-		picture: "pics/smile.png",
-        title: "Straight for the Knife"
-    })
-	.addTrack({
-        filename: "mp3/07 - Fair Game.mp3",
-        artist: "Sia",
-		picture: "pics/sand.png",
-        title: "Fair Game"
-    })
-	.addTrack({
-        filename: "mp3/08 - Elastic Heart.mp3",
-        artist: "Sia",
-		picture: "pics/beyleys.png",
-        title: "Elastic Heart"
-    })
-	.beReady();
-*/
     //after that, clicking on the pizza slice of the track will start playing the file
     
 }
