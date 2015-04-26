@@ -6,7 +6,7 @@
 
 Link raphael-min.js, player-ui.js and the stylesheet at your html header.
 
-In your html bpdy, prepare a div tag for the player, and one for the playlist (optional).
+In your html body, prepare a div tag for the player, and another for the playlist (optional).
 
 To show the audio player, execute the following (you can see a full example in js/website.js):
 ```
@@ -24,7 +24,7 @@ To show the audio player, execute the following (you can see a full example in j
           title: "Critical Dad"
 		}
    ]);
-    //your player will not show up until you execure .beready(). afterwhich you can no longer add new tracks.
+    //your player will not show up until you execure .beready(). Afterwhich you can no longer add new tracks.
     player1.beReady();
 ```    
 Notice that these commands can be chained together.
